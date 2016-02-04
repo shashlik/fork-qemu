@@ -176,6 +176,8 @@ write_default_keyset( void )
 /***********************************************************************/
 
 void *readpng(const unsigned char*  base, size_t  size, unsigned *_width, unsigned *_height);
+void *loadpng(const char *fn, unsigned *_width, unsigned *_height);
+
 
 #ifdef CONFIG_DARWIN
 #  define  ANDROID_ICON_PNG  "android_icon_256.png"
@@ -200,17 +202,23 @@ sdl_set_window_icon( void )
         SetClassLongPtr( wminfo.window, GCLP_HICON, (LONG)icon );
 #else  /* !_WIN32 */
         unsigned              icon_w, icon_h;
-        size_t                icon_bytes;
-        const unsigned char*  icon_data;
         void*                 icon_pixels;
 
         window_icon_set = 1;
 
-        icon_data = android_icon_find( ANDROID_ICON_PNG, &icon_bytes );
-        if ( !icon_data )
+        char *appName = getenv("SHASHLIK_APPNAME");
+        if ( appName)
+            SDL_WM_SetCaption( appName , appName );
+
+        char *iconFilePath = getenv("SHASHLIK_ICON");
+
+        if ( !iconFilePath )
             return;
 
-        icon_pixels = readpng( icon_data, icon_bytes, &icon_w, &icon_h );
+        icon_pixels = loadpng( iconFilePath, &icon_w, &icon_h);
+           printf("setting icon3 \n");
+
+//         icon_pixels = readpng( icon_data, icon_bytes, &icon_w, &icon_h );
         if ( !icon_pixels )
             return;
 
@@ -234,10 +242,14 @@ sdl_set_window_icon( void )
                 d[0] = pix;
             }
         }
+            printf("setting icon1 \n");
+
 
         SDL_Surface* icon = sdl_surface_from_argb32( icon_pixels, icon_w, icon_h );
         if (icon != NULL) {
+            printf("setting icon\n");
             SDL_WM_SetIcon(icon, NULL);
+
             SDL_FreeSurface(icon);
             free( icon_pixels );
         }

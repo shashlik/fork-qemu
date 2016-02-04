@@ -208,6 +208,8 @@ qemulator_get_first_framebuffer(QEmulator* emulator)
 void
 qemulator_set_title(QEmulator* emulator)
 {
+    //Shahslik: no-op as we set our own title
+    return;
     char  temp[128], *p=temp, *end=p+sizeof temp;;
 
     if (emulator->window == NULL)
@@ -382,7 +384,7 @@ handle_key_command( void*  opaque, SkinKeyCommand  command, int  down )
     if (command == SKIN_KEY_COMMAND_SHOW_TRACKBALL) {
         emulator->show_trackball = (down != 0);
         skin_window_show_trackball( emulator->window, emulator->show_trackball );
-        //qemulator_set_title( emulator );
+        qemulator_set_title( emulator );
         return;
     }
 
